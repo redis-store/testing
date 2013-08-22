@@ -29,9 +29,11 @@ $ gem install redis-store-testing
 require 'bundler/setup'
 require 'rake'
 require 'bundler/gem_tasks'
+require 'redis-store/testing/tasks'
+```
 
-load 'tasks/redis-store.tasks.rb'
-task default: 'redis:test:suite'
+```shell
+$ bundle exec rake
 ```
 
 ## Contributing
