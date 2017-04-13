@@ -3,7 +3,7 @@ $:.push File.expand_path('../lib', __FILE__)
 
 Gem::Specification.new do |spec|
   spec.name          = 'redis-store-testing'
-  spec.version       = '0.0.2'
+  spec.version       = '0.0.3'
   spec.authors       = ['Luca Guidi']
   spec.email         = ['me@lucaguidi.com']
   spec.description   = %q{redis-store testing}
