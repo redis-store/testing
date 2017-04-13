@@ -37,10 +37,24 @@ class RedisStoreTesting
       end
     end
 
+    run_tests_locally
+
     task default: 'redis:test:suite'
   end
 
   protected
+
+  def run_tests_locally
+    desc 'Run tests for all supported dependency versions'
+    task :test do
+      Rake::Task['redis:test:suite'].invoke if appraisal_gemfiles.empty?
+
+      appraisal_gemfiles.each do |gemfile|
+        sh "BUNDLE_GEMFILE=#{gemfile} bundle exec rake"
+      end
+    end
+  end
+
   def redis_about
     desc 'About redis'
     task :about do
@@ -149,6 +163,10 @@ class RedisStoreTesting
     ensure
       Rake::Task['redis:replication:stop'].invoke
     end
+  end
+
+  def appraisal_gemfiles
+    Dir["./gemfiles/*.gemfile"].reject { |p| p =~ /\.lock\Z/ }
   end
 end
 
