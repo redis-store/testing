@@ -4,6 +4,7 @@ require 'fileutils'
 require 'pathname'
 require 'open-uri'
 require 'redis-store/testing/redis_replication_runner'
+require 'date'
 
 class RedisStoreTesting
   include Rake::DSL
@@ -37,12 +38,55 @@ class RedisStoreTesting
       end
     end
 
+    changelog
+
     run_tests_locally
 
     task default: 'redis:test:suite'
   end
 
   protected
+
+  def changelog
+    task :changelog, :from, :to do |_t, args|
+      from = args[:from] || `git describe --tags --abbrev=0`.strip
+      to = args[:to] || 'HEAD'
+      log = `git log #{from}..#{to} --pretty=format:'%an|%B___'`
+
+      puts "#{project_title} (#{Date.today})"
+      puts '-' * 80
+      puts
+
+      log.split(/___/).each do |commit|
+        pieces = commit.split('|').reverse
+        author = pieces.pop.strip
+        message = pieces.join.strip
+
+        next if message =~ /^\s*Merge pull request/
+        next if message =~ /No changelog/
+
+        ticket = message.scan(/SEGMENTS-\d+/)[0]
+        next if ticket.nil?
+        next if message =~ /^\s*Merge branch/ && ticket.nil?
+
+        first_line = false
+
+        message.each_line do |line|
+          if !first_line
+            first_line = true
+            puts "*   #{line}"
+          elsif line.strip.empty?
+            puts
+          else
+            puts "    #{line}"
+          end
+        end
+
+        puts "    #{author}"
+        puts
+      end
+    end
+  end
 
   def run_tests_locally
     desc 'Run tests for all supported dependency versions'
@@ -167,6 +211,9 @@ class RedisStoreTesting
 
   def appraisal_gemfiles
     Dir["./gemfiles/*.gemfile"].reject { |p| p =~ /\.lock\Z/ }
+  end
+
+  def project_title
   end
 end
 
