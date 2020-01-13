@@ -64,7 +64,7 @@ class RedisStoreTesting
 
         next if message =~ /^\s*Merge pull request/
         next if message =~ /No changelog/
-        next if message =~ /^\s*Merge branch/ && ticket.nil?
+        next if message =~ /^\s*Merge branch/
 
         first_line = false
 
