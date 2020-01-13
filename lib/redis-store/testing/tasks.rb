@@ -64,9 +64,6 @@ class RedisStoreTesting
 
         next if message =~ /^\s*Merge pull request/
         next if message =~ /No changelog/
-
-        ticket = message.scan(/SEGMENTS-\d+/)[0]
-        next if ticket.nil?
         next if message =~ /^\s*Merge branch/ && ticket.nil?
 
         first_line = false
