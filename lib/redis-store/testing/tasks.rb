@@ -160,8 +160,9 @@ class RedisStoreTesting
     Rake::TestTask.new(:run) do |t|
       t.libs.push 'lib'
       t.test_files = FileList['test/**/*_test.rb']
-      t.ruby_opts  = ["-I test"]
+      t.ruby_opts  = ["-I test", '-W0']
       t.verbose    = true
+      t.warning    = false
     end
   end
 
